@@ -29,7 +29,7 @@ namespace TVScapper
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "TVScapper", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "TVScraper", Version = "v1" });
             });
         }
 
@@ -40,12 +40,13 @@ namespace TVScapper
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TVScapper v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TVScraper v1"));
             }
+
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
