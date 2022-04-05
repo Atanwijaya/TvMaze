@@ -9,7 +9,7 @@ namespace TVScapper.Interfaces
 {
     public interface IBaseRepository
     {
-        Task<IEnumerable<T>> QueryAsync<T>(string commandString, object parameters, CommandType? commandType);
+        Task<List<T>> QueryAsync<T>(string commandString, object parameters, CommandType? commandType);
         Task QueryAsync(string commandString, object parameters, CommandType? commandType);
     }
 }

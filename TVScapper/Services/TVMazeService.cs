@@ -35,16 +35,16 @@ namespace TVScapper.Services
             else
                 limitAsInt = (int)limit;
 
-            int offSet = page * limitAsInt;
-            limitAsInt++;
-            var tvShowsDB = (await _baseRepo.QueryAsync<TVShowDBModel>("GetTVShowsWithCast", new { Offset = offSet, Limit = limitAsInt }, CommandType.StoredProcedure)).ToList();
+            int finalPage = --page;
+            int offSet = finalPage * (limitAsInt);
+            var tvShowsDB = (await _baseRepo.QueryAsync<TVShowDBModel>("GetTVShowsWithCast", new { Offset = offSet, Limit = ++limitAsInt }, CommandType.StoredProcedure));
           
-            return ConstructViewModel(tvShowsDB, page, limitAsInt);
+            return ConstructViewModel(tvShowsDB, finalPage, limitAsInt);
         }
 
         public async Task<TVShowVM> GetTVShowsWithCastByIDAsync(int ID)
         {
-            var tvShowsDB = (await _baseRepo.QueryAsync<TVShowDBModel>("GetTVShowsWithCastByID", new { ID = ID}, CommandType.StoredProcedure)).ToList();
+            var tvShowsDB = (await _baseRepo.QueryAsync<TVShowDBModel>("GetTVShowsWithCastByID", new { ID = ID}, CommandType.StoredProcedure));
 
             if (!tvShowsDB.Any())
                 throw new NotFoundException(Constant.ExceptionMessage.IDNotFoundException);
@@ -62,7 +62,7 @@ namespace TVScapper.Services
             bool hasMore = false;
             var tvShowPage = new TVShowPage()
             {
-                PageNumber = page,
+                PageNumber = (page + 1),
                 PageSize = limitAsInt - 1,
                 HasMore = hasMore,
                 Items = new List<TVShowVM>()

@@ -75,8 +75,8 @@ namespace TVScapper.Services
                 List<TVShowCast> tvShowCasts = new List<TVShowCast>();
                 List<TVShowGenres> tvShowGenres = new List<TVShowGenres>();
 
-               // for (int i = 0; i < shows.Count; i++)
-               for (int i = 0; i < 100; i++)
+               for (int i = 0; i < shows.Count; i++)
+               //for (int i = 0; i < 100; i++)
                 {
                     var currentShow = shows[i];
                     var showPersonCharacters = await _retryService.DoActionAsync<List<ShowPersonCharacter>>(async () => await GetShowCastsAsync(client, currentShow.ID));

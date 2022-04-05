@@ -19,7 +19,7 @@ namespace TVScapper.Repositories
             _config = config;
         }
 
-        public async Task<IEnumerable<T>> QueryAsync<T>(string commandString, object parameters, CommandType? commandType)
+        public async Task<List<T>> QueryAsync<T>(string commandString, object parameters, CommandType? commandType)
         {
             using (IDbConnection dbConnection = new SqlConnection(_config.GetConnectionString(Constant.AppSettings.MSSQLConnectionString)))
             {
@@ -28,7 +28,8 @@ namespace TVScapper.Repositories
 
                 try
                 {
-                   return await dbConnection.QueryAsync<T>(commandString, parameters, commandType: commandType);
+                   var res = await dbConnection.QueryAsync<T>(commandString, parameters, commandType: commandType);
+                    return res.ToList();
                 }
                 catch
                 {
