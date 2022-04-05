@@ -11,6 +11,11 @@ begin
 Drop procedure InsertTVShowsWithCast
 end
 
+if exists(SELECT top 1 type FROM sys.procedures WHERE NAME = 'GetTVShowsWithCastByID')
+begin
+Drop procedure GetTVShowsWithCastByID
+end
+
 if exists (SELECT 1 FROM sys.types WHERE name = 'TVShow_Cast')
 begin
 drop type TVShow_Cast
@@ -25,7 +30,7 @@ drop table if exists [Genre]
 
 Create table [dbo].Genre(
 	[ID] int primary key clustered identity(1,1) not null,
-	[Name] char(32) not null
+	[Name] varchar(32) not null
 )
 
 drop table if exists [TVShow_Cast]
@@ -34,18 +39,18 @@ drop table if exists [TVShow]
 
 CREATE TABLE [dbo].[TVShow] (
 	[ID] int primary key  clustered not null,
-	[URL] varchar(256)  not null,
-	[Name] char(64) not null,
-	[Type] char(16) not null,
-	[Language] char(16) not null,
-	[Status] char(16) not null,
-	[Runtime] int not null,
-	[AverageRuntime] int not null,
-	[Premiered] date not null,
+	[URL] varchar(256)  null,
+	[Name] varchar(64) not null,
+	[Type] varchar(16) null,
+	[Language] varchar(16) not null,
+	[Status] varchar(16) not null,
+	[Runtime] int null,
+	[AverageRuntime] int null,
+	[Premiered] date  null,
 	[Ended] date null,
 	[OfficialSite] varchar(256)  null,
 	[Rating] float null,
-	[ScheduleTime] time not null, 
+	[ScheduleTime] char(5) null, 
 	[Image] varchar(1024) null,
 	[Summary] varchar(max) null,
 	[ScheduleMon] bit DEFAULT 0,
@@ -66,14 +71,14 @@ Create table [dbo].TVShow_Genres(
 drop table if exists [Cast]
 CREATE TABLE [dbo].[Cast] (
 		[ID] int primary key  clustered not null,
-		[URL] varchar(256)  not null,
-		[Name] varchar(128) not null,
-		[CountryName] char(16) not null,
-		[CountryCode] char(8) not null,
-		[CountryTZ] varchar(32) not null,
-		[Birthday] date not null,
+		[URL] varchar(256)  null,
+		[Name] varchar(256) not null,
+		[CountryName] varchar(64)  null,
+		[CountryCode] varchar(8)  null,
+		[CountryTZ] varchar(64)  null,
+		[Birthday] date  null,
 		[Deathday] date  null,
-		[Gender] char(1) not null,
+		[Gender] char(1) null,
 		[Image] varchar(1024) null
 	)
 
@@ -82,7 +87,7 @@ drop table if exists [Character]
 CREATE TABLE [dbo].[Character] (
 		[ID] int primary key  clustered not null,
 		[Name] varchar(128) not null,
-		[URL] varchar(256)  not null,
+		[URL] varchar(256)  null,
 		[Image] varchar(1024) null
 
 )
@@ -96,7 +101,7 @@ Create table [dbo].TVShow_Cast(
 
 	CREATE TYPE [dbo].[TVShow_Genres] as TABLE(
 	[IDTV] int not null,
-	[Name] char(32) not null
+	[Name] varchar(32) not null
 	)
 
 
@@ -113,18 +118,18 @@ drop type TVShow
 end
 	CREATE TYPE [dbo].[TVShow] as TABLE(
 	[ID] int primary key  not null,
-	[URL] varchar(256)  not null,
-	[Name] char(64) not null,
-	[Type] char(16) not null,
-	[Language] char(16) not null,
-	[Status] char(16) not null,
-	[Runtime] int not null,
-	[AverageRuntime] int not null,
-	[Premiered] date not null,
+	[URL] varchar(256)  null,
+	[Name] varchar(64) not null,
+	[Type] varchar(16) null,
+	[Language] varchar(16) not null,
+	[Status] varchar(16) not null,
+	[Runtime] int null,
+	[AverageRuntime] int null,
+	[Premiered] date null,
 	[Ended] date null,
 	[OfficialSite] varchar(256)  null,
 	[Rating] float null,
-	[ScheduleTime] time not null, 
+	[ScheduleTime] char(5) null, 
 	[Image] varchar(1024) null,
 	[Summary] varchar(max) null,
 	[ScheduleMon] bit DEFAULT 0,
@@ -144,14 +149,14 @@ end
 
 CREATE TYPE [dbo].[Cast] as TABLE(
 		[ID] int primary key  not null,
-		[URL] varchar(256)  not null,
-		[Name] varchar(128) not null,
-		[CountryName] char(16) not null,
-		[CountryCode] char(8) not null,
-		[CountryTZ] varchar(32) not null,
-		[Birthday] date not null,
+		[URL] varchar(256)  null,
+		[Name] varchar(256) not null,
+		[CountryName] varchar(64) null,
+		[CountryCode] varchar(8) null,
+		[CountryTZ] varchar(64) null,
+		[Birthday] date null,
 		[Deathday] date  null,
-		[Gender] char(1) not null,
+		[Gender] char(1) null,
 		[Image] varchar(1024) null
 	)
 
@@ -163,7 +168,7 @@ end
 CREATE TYPE [dbo].[TVCharacter] as TABLE(
 		[ID] int primary key  not null,
 		[Name] varchar(128) not null,
-		[URL] varchar(256)  not null,
+		[URL] varchar(256)  null,
 		[Image] varchar(1024) null
 	)
 
@@ -184,10 +189,80 @@ GO
 	CREATE PROCEDURE GetTVShowsWithCast (@Offset int, @Limit int)
 	AS
 	Begin
-	 select 1
-	END
+		 	 select 
+			tv.*,
+			cast.ID as CastID,
+			cast.URL as CastURL,
+			cast.Name as CastName,
+			cast.CountryName as CastCountryName,
+			cast.CountryCode as CastCountryCode,
+			cast.CountryTZ as CastCountryTZ,
+			cast.Birthday,
+			cast.Deathday,
+			cast.Gender as CastGender,
+			cast.Image as CastImage,
+			char.ID as CharacterID,
+			char.Name as CharacterName,
+			char.URL as CharacterURL,
+			char.Image as CharacterIMG,
+			genre.Name as Genre
+			from 
+			(
+				select * from
+				TVShow
+				order by id
+				offset @Offset rows
+				fetch next @Limit rows only
+			) tv
+			inner join TVShow_Cast tv_cast
+			on tv.ID = tv_cast.IDTV
+			inner join Cast cast
+			on cast.ID = tv_cast.IDCast
+			inner join Character char
+			on char.ID = tv_cast.IDCharacter
+			inner join TVShow_Genres tv_genres
+			on tv.ID = tv_genres.IDTV
+			inner join Genre genre
+			on genre.id = tv_genres.IDGenre
+		end
 GO
 
+	CREATE PROCEDURE GetTVShowsWithCastByID (@ID int)
+	AS
+	Begin
+		 	 select 
+			tv.*,
+			cast.ID as CastID,
+			cast.URL as CastURL,
+			cast.Name as CastName,
+			cast.CountryName as CastCountryName,
+			cast.CountryCode as CastCountryCode,
+			cast.CountryTZ as CastCountryTZ,
+			cast.Birthday,
+			cast.Deathday,
+			cast.Gender as CastGender,
+			cast.Image as CastImage,
+			char.ID as CharacterID,
+			char.Name as CharacterName,
+			char.URL as CharacterURL,
+			char.Image as CharacterIMG,
+			genre.Name as Genre
+			from 
+			TVShow tv
+			inner join TVShow_Cast tv_cast
+			on tv.ID = tv_cast.IDTV
+			inner join Cast cast
+			on cast.ID = tv_cast.IDCast
+			inner join Character char
+			on char.ID = tv_cast.IDCharacter
+			inner join TVShow_Genres tv_genres
+			on tv.ID = tv_genres.IDTV
+			inner join Genre genre
+			on genre.id = tv_genres.IDGenre
+
+			where tv.ID = @ID
+		end
+GO
 	CREATE PROCEDURE InsertTVShowsWithCast (@TVShow TVShow readonly, @Character [TVCharacter] readonly, @Cast [Cast] readonly, @TVShow_Cast [TVShow_Cast] readonly, @TVShow_Genres [TVShow_Genres] readonly)
 	AS
 	Begin
@@ -256,16 +331,22 @@ GO
 					IDCharacter
 					from @TVShow_Cast
 
+
+				DECLARE @GenreID TABLE (ID bigint, Name varchar(32))
+
 				insert into Genre
-				select Name
-				from @TVShow_Genres tvGenres
-				where tvGenres.Name <> Name
+				OUTPUT INSERTED.ID,INSERTED.NAME into @GenreID(ID, Name)
+				select distinct tvGenres.Name
+				from @TVShow_Genres tvGenres left join
+				genre gen on tvGenres.name = gen.name
+				where gen.name is null
 
 				Insert into [TVShow_Genres]
 					select
 					IDTV,
-					(select ID from Genre where name = tvGenres.name)
+					genre.ID
 					from @TVShow_Genres tvGenres
+					inner join @GenreID genre on tvGenres.name = genre.name
 
 			COMMIT TRAN
 		end try

@@ -5,10 +5,9 @@ using System.Threading.Tasks;
 
 namespace TVScapper.Models
 {
-    public class Character
+    public class TVShowGenres
     {
+        public int IDTV { get; set; }
         public string Name { get; set; }
-        public string URL { get; set; }
-        public string Image { get; set; }
     }
 }

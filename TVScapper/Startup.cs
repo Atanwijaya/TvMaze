@@ -9,7 +9,13 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using TVScapper.Interfaces;
+using TVScapper.Middleware;
+using TVScapper.Models;
+using TVScapper.Repositories;
+using TVScapper.Services;
 
 namespace TVScapper
 {
@@ -26,10 +32,23 @@ namespace TVScapper
         public void ConfigureServices(IServiceCollection services)
         {
 
+            services.AddSingleton<ITVMazeService, TVMazeService>();
+            services.AddSingleton<ITVMazeSetupService, TVMazeSetupService>();
+            services.AddSingleton<IUtilityService, RetryService>();
+            services.AddSingleton<IBaseRepository, BaseRepository>();
+
+            services.AddHttpClient(Constant.TVMazeAPIClientName, client =>
+            {
+                client.BaseAddress = new Uri("https://api.tvmaze.com/");
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json; charset=utf-8");
+            });
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "TVScraper", Version = "v1" });
+                c.EnableAnnotations();
             });
         }
 
@@ -46,6 +65,7 @@ namespace TVScapper
 
             app.UseRouting();
 
+            app.UseMiddleware<GlobalExceptionHandler>();
             //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

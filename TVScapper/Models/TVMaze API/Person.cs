@@ -3,19 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace TVScapper.Models
+namespace TVScapper.Models.TVMaze_API
 {
-    public class Cast
+    public class Person
     {
         public int ID { get; set; }
         public string URL { get; set; }
         public string Name { get; set; }
-        public string CountryName { get; set; }
-        public string CountryCode { get; set; }
-        public string CountryTZ { get; set; }
+        public Country Country { get; set; }
         public DateTime? Birthday { get; set; }
         public DateTime? Deathday { get; set; }
-        public Char? Gender { get; set; }
-        public string Image { get; set; }
+        public string Gender { get; set; }
+        public Image Image { get; set; }
     }
 }

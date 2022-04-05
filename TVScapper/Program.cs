@@ -6,14 +6,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TVScapper.Interfaces;
 
 namespace TVScapper
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            IHost webHost = CreateHostBuilder(args).Build();
+            ITVMazeSetupService tVMazeSetupService = (ITVMazeSetupService)webHost.Services.GetService(typeof(ITVMazeSetupService));
+            await tVMazeSetupService.SetupTVMazeArchitectureAsync();
+            await webHost.RunAsync();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

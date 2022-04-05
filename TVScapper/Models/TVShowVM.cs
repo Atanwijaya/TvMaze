@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace TVScapper.Models
 {
-    public class TVShow
+    public class TVShowVM
     {
 		public int ID { get; set; }
 		public string URL { get; set; }
@@ -15,19 +15,14 @@ namespace TVScapper.Models
 		public string Status { get; set; }
 		public int? Runtime { get; set; }
 		public int? AverageRuntime { get; set; }
-		public DateTime? Premiered { get; set; }
-		public DateTime? Ended { get; set; }
+		public string Premiered { get; set; }
+		public string Ended { get; set; }
 		public string OfficialSite { get; set; }
 		public float? Rating { get; set; }
-		public string ScheduleTime { get; set; }
 		public string Image { get; set; }
 		public string Summary { get; set; }
-		public bool ScheduleMon { get; set; }
-		public bool ScheduleTue { get; set; }
-		public bool ScheduleWed { get; set; }
-		public bool ScheduleThu { get; set; }
-		public bool ScheduleFri { get; set; }
-		public bool ScheduleSat { get; set; }
-		public bool ScheduleSun { get; set; }
-	}
+		public TVShowSchedules Schedules { get; set; }
+        public List<PersonCharacter> Characters { get; set; }
+        public List<string> Genres { get; set; }
+    }
 }
